@@ -2,8 +2,11 @@ services:
   note-service:
     build: .
     ports:
-      - "3000:3000"
+      - "3000:3000"  
+      - "9229:9229"  
     volumes:
       - .:/app
       - /app/node_modules
-    command: ["node", "main.js", "--host", "0.0.0.0", "--port", "3000", "--cache", "./cache"]
+    command: ["npx", "nodemon", "--inspect=0.0.0.0:9229", "main.js", "--host", "0.0.0.0", "--port", "3000", "--cache", "./cache"]
+    environment:
+      - NODE_ENV=development

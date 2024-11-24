@@ -35,24 +35,32 @@ app.get('/notes/:noteName', (req, res) => {
   if (!fs.existsSync(notePath)) {
       return res.status(404).send('Not found');
   }
-
+  debugger;
   const noteText = fs.readFileSync(notePath, 'utf8');
   res.send(noteText);
 });
 
-//PUT /notes/<ім’я нотатки>
+
+// PUT /notes/<ім’я нотатки>
 app.put('/notes/:noteName', (req, res) => {
-  const notePath = path.join(options.cache, req.params.noteName);
-  if (!fs.existsSync(notePath)) {
-      return res.status(404).send('Not found');
-  }
-  const newText = req.body;
-  if (newText === undefined) {
-      return res.status(400).send('Enter text');
-  }
-  fs.writeFileSync(notePath, newText);
-  res.send('Note updated');
+    const notePath = path.join(options.cache, req.params.noteName);
+    if (!fs.existsSync(notePath)) {
+        return res.status(404).send('Not found');
+    }
+    const text = req.body;
+    if (text === undefined) {
+        return res.status(400).send('Enter text');
+    }
+    try {
+        debugger;
+        fs.writeFileSync(notePath, String(text), 'utf8');
+        res.send('Note updated');
+    } catch (err) {
+        console.error('Помилка запису у файл:', err);
+        res.status(500).send('Internal server error');
+    }
 });
+
 
 //DELETE /notes/<ім’я нотатки>
 app.delete('/notes/:noteName', (req, res) => {
@@ -60,6 +68,7 @@ app.delete('/notes/:noteName', (req, res) => {
   if (!fs.existsSync(notePath)) {
       return res.status(404).send('Not found');
   }
+  debugger;
   fs.unlinkSync(notePath);
   res.send('Note deleted');
 });
@@ -68,6 +77,7 @@ app.delete('/notes/:noteName', (req, res) => {
 app.get('/notes', (req, res) => {
   const files = fs.readdirSync(options.cache);
   const notes = files.map(fileName => {
+      debugger;
       const text = fs.readFileSync(path.join(options.cache, fileName), 'utf8');
       return { name: fileName, text };
   });
@@ -83,6 +93,7 @@ app.post('/write', upload.none(), (req, res) => {
       return res.status(400).send('Note already exists');
   }
   try {
+      debugger;
       fs.writeFileSync(notePath, noteText);
       res.status(201).send('Note created');
   } catch (error) {
